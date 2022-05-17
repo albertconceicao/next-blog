@@ -22,7 +22,6 @@ interface Post {
     title: string;
     subtitle: string;
     author: string;
-    readTime: number;
     content: {
       heading: string;
       body: {
@@ -46,25 +45,13 @@ export default function Home({
   postsPagination,
   preview,
 }: HomeProps): ReactElement {
-  function getReadTime(item: Post): number {
-    const totalWords = item.data.content.reduce((total, contentItem) => {
-      total += contentItem.heading.split(' ').length;
-
-      const words = contentItem.body.map(i => i.text.split(' ').length);
-      words.map(word => (total += word));
-      return total;
-    }, 0);
-    return Math.ceil(totalWords / 200);
-  }
-
   const formattedPost = postsPagination.results.map(post => {
-    const readTime = getReadTime(post);
-
+   
+    
     return {
       ...post,
       data: {
         ...post.data,
-        readTime,
       },
       first_publication_date: format(
         new Date(post.first_publication_date),
@@ -72,9 +59,9 @@ export default function Home({
         {
           locale: ptBR,
         }
-      ),
-    };
-  });
+        ),
+      };
+    });
 
   const [posts, setPosts] = useState<Post[]>(formattedPost);
   const [nextPage, setNextPage] = useState(postsPagination.next_page);
@@ -92,7 +79,7 @@ export default function Home({
     setCurrentPage(postsResults.page);
 
     const newPosts = postsResults.results.map((post: Post) => {
-      const readTime = getReadTime(post);
+      
 
       return {
         uid: post.uid,
@@ -107,7 +94,6 @@ export default function Home({
           title: post.data.title,
           subtitle: post.data.subtitle,
           author: post.data.author,
-          readTime,
         },
       };
     });
@@ -138,10 +124,6 @@ export default function Home({
                   <li>
                     <FiUser />
                     {post.data.author}
-                  </li>
-                  <li>
-                    <FiClock />
-                    {`${post.data.readTime} min`}
                   </li>
                 </ul>
               </a>
